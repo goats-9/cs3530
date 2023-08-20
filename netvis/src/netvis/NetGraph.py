@@ -11,13 +11,11 @@ An object class containing the nodes of a network and
 the connections between the nodes. The data of the node
 is stored in a DataFrame object and the connections
 are stored in an edge list.
-
-nodes contains the ip, as_num, as_name
 '''
 class NetGraph:
     def __init__(self):
         self.nodes = pd.DataFrame(columns=['Ip','Asn','As_name'])
-        self.adj_list = pd.DataFrame(columns=['Ip', 'next_Ip'])
+        self.edge_list = pd.DataFrame(columns=['Ip', 'next_Ip'])
     
     def traceroute(self, dest):
         # Get output of mtr command
@@ -29,12 +27,13 @@ class NetGraph:
         # Join with ASN dataframe and retain requried columns
         union_df = union_df.merge(asn_df , on='Asn')[['Ip','Asn','As_name']]
         # Merge nodes
-        self.nodes.merge(union_df, on='Ip')
+        self.nodes = pd.concat([self.nodes, union_df], axis=0, ignore_index=True).drop_duplicates(keep='first')
         # Pair up adjacent rows using concat and drop last row
         union_df = pd.concat([union_df, union_df.shift(-1).add_prefix('next_')], axis=1)[:-1][['Ip', 'next_Ip']]
         # Augment adjacency list
-        self.adj_list.merge(union_df, on=['Ip', 'next_Ip'])
+        self.edge_list = pd.concat([self.edge_list, union_df], axis=0, ignore_index=True).drop_duplicates(keep='first')
+        # drop_duplicates(keep='first')
     
     def disp(self):
         print(self.nodes)
-        print(self.adj_list)
+        print(self.edge_list)

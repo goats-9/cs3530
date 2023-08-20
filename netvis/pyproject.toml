@@ -7,6 +7,8 @@ name = "netvis"
 version = "0.0.1"
 authors = [
   { name="Gautam Singh", email="goats.singh@gmail.com" },
+  { name="Anshul Sangrame", email="someone@example.com" },
+  { name="Varun Gupta", email="someoneelse@example.com" },
 ]
 description = "Package to visualize real networks using traceroute commands"
 readme = "README.md"
