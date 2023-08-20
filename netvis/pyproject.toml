@@ -1,3 +1,20 @@
 [build-system]
-requires = "hatchling"
+requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[project]
+name = "netvis"
+version = "0.0.1"
+authors = [
+  { name="Gautam Singh", email="goats.singh@gmail.com" },
+]
+description = "Package to visualize real networks using traceroute commands"
+readme = "README.md"
+requires-python = ">=3.7"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src/netvis", "data"]
+
+[tool.hatch.build.targets.wheel.sources]
+"src" = ""
+"data" = "netvis/data"
