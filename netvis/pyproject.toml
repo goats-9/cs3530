@@ -13,10 +13,3 @@ authors = [
 description = "Package to visualize real networks using traceroute commands"
 readme = "README.md"
 requires-python = ">=3.7"
-
-[tool.hatch.build.targets.wheel]
-only-include = ["src/netvis", "data"]
-
-[tool.hatch.build.targets.wheel.sources]
-"src" = ""
-"data" = "netvis/data"
