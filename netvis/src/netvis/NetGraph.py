@@ -25,7 +25,7 @@ class NetGraph:
         union_df = union_df.loc[union_df['Ip'] != '???']
         union_df['Asn'] = union_df['Asn'].apply(lambda x: 0 if x[2:] == '???' else int(x[2:]))
         # Join with ASN dataframe and retain requried columns
-        union_df = union_df.merge(asn_df , on='Asn')[['Ip','Asn','As_name']]
+        union_df = union_df.merge(asn_df , on='Asn', how='left')[['Ip','Asn','As_name']]
         # Merge nodes
         self.nodes = pd.concat([self.nodes, union_df], axis=0, ignore_index=True).drop_duplicates(keep='first')
         # Pair up adjacent rows using concat and drop last row
