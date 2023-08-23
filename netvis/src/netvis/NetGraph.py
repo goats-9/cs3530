@@ -57,9 +57,9 @@ class NetGraph:
         return c
 
     def disp(self):
-        net = Network(directed=True,height="100vh")
+        net = Network(directed=True,height="98vh",bgcolor="#FAF0E6")
         num_rows = self.nodes.shape[0]
-        self.color = {}
+        self.color = {"#FAF0E6":"BGcolor"}
         self.mp = {}
 
         # Adding edges in net
@@ -71,7 +71,7 @@ class NetGraph:
             title2 = "AS Number unavailable"
 
             if (i == 0):                
-                net.add_node(Ip,shape='image',image='./data/Media/source.png',title=title2)
+                net.add_node(Ip,shape='image',image='./data/Media/source.png',title=title2,physics="fixed")
             elif (Asn == 0):
                 if not(0 in self.mp):
                     c = self.generate_color()
@@ -91,7 +91,12 @@ class NetGraph:
         # edge will take color from both nodes
         net.inherit_edge_colors('both')
         # produces index.html
-        net.show('index.html',notebook=False)
+        net.show('graph.html',notebook=False)
+
+        # Storing legends data in csv
+        self.color = [self.color]
+        df = pd.DataFrame(self.color)
+        df.to_csv('legends.csv',index=False,header=True)
 
 def load(filename):
     node_df = pd.read_excel(filename, sheet_name='nodes')
