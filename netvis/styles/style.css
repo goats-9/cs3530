@@ -1,0 +1,45 @@
+*
+{
+    padding: 0;
+    margin: 0;
+}
+
+.main
+{
+    /* flex */
+    display: flex;
+
+    /* size */
+    height: 95vh;
+    width: 100%;
+
+    /* space */
+    margin: 10px;
+}
+
+.main > *
+{
+    /* size */
+    flex-grow: 1;
+    height: 100%;
+}
+
+.graph
+{
+    /* self-flex */
+    flex-grow: 4;
+    /* border */
+    border: none;
+}
+
+.graph  *
+{
+    margin: 0;
+}
+
+.legend
+{
+    /* display */
+    display: flex;
+    justify-content: center;
+}
