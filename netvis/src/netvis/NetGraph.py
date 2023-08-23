@@ -1,4 +1,5 @@
 import pandas as pd
+import random
 import subprocess
 import io
 import zipfile
@@ -49,21 +50,42 @@ class NetGraph:
             self.nodes.to_excel(writer, sheet_name='nodes', index=False)
             self.edge_list.to_excel(writer, sheet_name='edges', index=False)
 
+    def generate_color(self):
+        c = '#%06x' % random.randint(0, 0xFFFFFF)
+        while(c in self.color):
+            c = '#%06x' % random.randint(0, 0xFFFFFF)
+        return c
+
     def disp(self):
         net = Network(directed=True,height="100vh")
         num_rows = self.nodes.shape[0]
-        
+        self.color = {}
+        self.mp = {}
+
         # Adding edges in net
         for i in range(0,num_rows):
             Asn, ASName, Ip = self.nodes.loc[i,["Asn","As_name","Ip"]]
+            if not pd.isna(ASName):
+                ASName = ASName.split(" ")[0]
             title1 = f"AS Number: {Asn}\nAS Name: {ASName}"
             title2 = "AS Number unavailable"
-            if (i == 0):
-                net.add_node(Ip,group=3,shape='image',image='./data/Media/source.png',title=title2)
+
+            if (i == 0):                
+                net.add_node(Ip,shape='image',image='./data/Media/source.png',title=title2)
             elif (Asn == 0):
-                net.add_node(Ip,group=1,title=title2)
+                if not(0 in self.mp):
+                    c = self.generate_color()
+                    self.color[c] = "no ASN"
+                    self.mp[0] = c
+
+                net.add_node(Ip,color=self.mp[0],title=title2)
             else:
-                net.add_node(Ip,group=2,title=title1)
+                if not (Asn in self.mp):
+                    c = self.generate_color()
+                    self.color[c] = Asn
+                    self.mp[Asn] = c
+                    
+                net.add_node(Ip,color=self.mp[Asn],title=title1,shape='triangle')
         # Adding edges in net
         net.add_edges(tuple(zip(self.edge_list.loc[:,"Ip"],self.edge_list.loc[:,"next_Ip"])))
         # edge will take color from both nodes
