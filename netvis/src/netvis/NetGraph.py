@@ -44,8 +44,8 @@ class NetGraph:
     
     def save(self, filename):
         with pd.ExcelWriter(filename) as writer:
-            self.nodes.to_excel(writer, sheet_name='nodes')
-            self.edge_list.to_excel(writer, sheet_name='edges')
+            self.nodes.to_excel(writer, sheet_name='nodes', index=False)
+            self.edge_list.to_excel(writer, sheet_name='edges', index=False)
 
     def disp(self):
         print(self.nodes)
