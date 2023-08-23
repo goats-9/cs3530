@@ -29,6 +29,7 @@ class NetGraph:
         ipaddr = socket.gethostbyname(socket.gethostname())
         fh = open('mtr_'+ipaddr+'.txt', 'a')
         fh.write(csv_str)
+        fh.write('*\n')
         fh.close()
         # Create dataframe from CSV output
         union_df = pd.read_csv(io.StringIO(csv_str), usecols=['Ip', 'Asn'])
