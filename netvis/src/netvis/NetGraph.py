@@ -1,6 +1,9 @@
 import pandas as pd
 import subprocess
 import io
+import zipfile
+import os
+from datetime import datetime
 
 from netvis import asn_df
 
@@ -13,9 +16,9 @@ is stored in a DataFrame object and the connections
 are stored in an edge list.
 '''
 class NetGraph:
-    def __init__(self):
-        self.nodes = pd.DataFrame(columns=['Ip','Asn','As_name'])
-        self.edge_list = pd.DataFrame(columns=['Ip', 'next_Ip'])
+    def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip'])):
+        self.nodes = nodes
+        self.edge_list = edge_list
     
     def traceroute(self, dest):
         # Get output of mtr command
@@ -26,14 +29,29 @@ class NetGraph:
         union_df['Asn'] = union_df['Asn'].apply(lambda x: 0 if x[2:] == '???' else int(x[2:]))
         # Join with ASN dataframe and retain requried columns
         union_df = union_df.merge(asn_df , on='Asn', how='left')[['Ip','Asn','As_name']]
-        # Merge nodes
-        self.nodes = pd.concat([self.nodes, union_df], axis=0, ignore_index=True).drop_duplicates(keep='first')
         # Pair up adjacent rows using concat and drop last row
-        union_df = pd.concat([union_df, union_df.shift(-1).add_prefix('next_')], axis=1)[:-1][['Ip', 'next_Ip']]
-        # Augment adjacency list
-        self.edge_list = pd.concat([self.edge_list, union_df], axis=0, ignore_index=True).drop_duplicates(keep='first')
-        # drop_duplicates(keep='first')
+        edge_df = pd.concat([union_df, union_df.shift(-1).add_prefix('next_')], axis=1)[:-1][['Ip', 'next_Ip']]
+        # Create a temporary new NetGraph object
+        merge_ng = NetGraph(union_df, edge_df)
+        # Unite the two objects
+        self.union(merge_ng)
     
+    def union(self, ng):
+        # Merge nodes
+        self.nodes = pd.concat([self.nodes, ng.nodes], axis=0, ignore_index=True).drop_duplicates(keep='first')
+        # Augment edge list
+        self.edge_list = pd.concat([self.edge_list, ng.edge_list], axis=0, ignore_index=True).drop_duplicates(keep='first')
+    
+    def save(self, filename):
+        with pd.ExcelWriter(filename) as writer:
+            self.nodes.to_excel(writer, sheet_name='nodes')
+            self.edge_list.to_excel(writer, sheet_name='edges')
+
     def disp(self):
         print(self.nodes)
         print(self.edge_list)
+
+def load(filename):
+    node_df = pd.read_excel(filename, sheet_name='nodes')
+    edge_df = pd.read_excel(filename, sheet_name='edges')
+    return NetGraph(nodes=node_df, edge_list=edge_df)
