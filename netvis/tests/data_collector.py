@@ -11,7 +11,7 @@ def collect_data(urlfile, excel_file):
     ngraph.save(excel_file)
 
 # Call the function here with correct arguments
-urlfile='urls.txt'
+urlfile='data/urls.txt'
 ipaddr = socket.gethostbyname(socket.gethostname())
-excel_file='netgraph_'+ipaddr+'.txt'
+excel_file='data/netgraphs/netgraph_'+ipaddr+'.txt'
 collect_data(urlfile, excel_file)
