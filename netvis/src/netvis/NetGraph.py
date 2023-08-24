@@ -22,12 +22,12 @@ class NetGraph:
         self.nodes = nodes
         self.edge_list = edge_list
     
-    def traceroute(self, dest):
+    def traceroute(self, dest, logfile):
         # Get output of mtr command
         csv_str = subprocess.run(['mtr', '-zCnc8', dest], stdout=subprocess.PIPE).stdout.decode('utf-8')
         # Log the raw data output on file
         ipaddr = socket.gethostbyname(socket.gethostname())
-        fh = open('mtr_'+ipaddr+'.txt', 'a')
+        fh = open(logfile, 'a')
         fh.write(csv_str)
         fh.write('*\n')
         fh.close()
