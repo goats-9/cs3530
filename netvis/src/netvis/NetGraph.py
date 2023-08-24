@@ -18,7 +18,7 @@ is stored in a DataFrame object and the connections
 are stored in an edge list.
 '''
 class NetGraph:
-    def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name', 'Netblock']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip'])):
+    def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip'])):
         self.nodes = nodes
         self.edge_list = edge_list
     
@@ -26,7 +26,6 @@ class NetGraph:
         # Get output of mtr command
         csv_str = subprocess.run(['mtr', '-4', '-zCnc8', dest], stdout=subprocess.PIPE).stdout.decode('utf-8')
         # Log the raw data output on file
-        ipaddr = socket.gethostbyname(socket.gethostname())
         fh = open(logfile, 'a')
         fh.write(csv_str)
         fh.write('*\n')
@@ -36,7 +35,11 @@ class NetGraph:
         union_df = union_df.loc[union_df['Ip'] != '???']
         union_df['Asn'] = union_df['Asn'].apply(lambda x: 0 if x.partition(' ')[0][2:] == '???' else int(x.partition(' ')[0][2:]))
         # Join with ASN dataframe and retain requried columns
+        ipaddr = socket.gethostbyname(socket.gethostname())
         union_df = union_df.merge(asn_df, on='Asn', how='left')[['Ip','Asn','As_name']]
+        # Add row for host IP
+        new_row = pd.DataFrame({'Ip' : ipaddr, 'Asn' : 0, 'As_name' : None}, index=[0])
+        union_df = pd.concat([new_row, union_df]).reset_index(drop=True)
         # Pair up adjacent rows using concat and drop last row
         edge_df = pd.concat([union_df, union_df.shift(-1).add_prefix('next_')], axis=1)[:-1][['Ip', 'next_Ip']]
         # Create a temporary new NetGraph object
