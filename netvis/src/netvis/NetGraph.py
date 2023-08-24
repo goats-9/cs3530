@@ -24,7 +24,7 @@ class NetGraph:
     
     def traceroute(self, dest, logfile):
         # Get output of mtr command
-        csv_str = subprocess.run(['mtr', '-zCnc8', dest], stdout=subprocess.PIPE).stdout.decode('utf-8')
+        csv_str = subprocess.run(['mtr', '-4', '-zCnc8', dest], stdout=subprocess.PIPE).stdout.decode('utf-8')
         # Log the raw data output on file
         ipaddr = socket.gethostbyname(socket.gethostname())
         fh = open(logfile, 'a')
