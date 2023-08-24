@@ -34,7 +34,7 @@ class NetGraph:
         # Create dataframe from CSV output
         union_df = pd.read_csv(io.StringIO(csv_str), usecols=['Ip', 'Asn'])
         union_df = union_df.loc[union_df['Ip'] != '???']
-        union_df['Asn'] = union_df['Asn'].apply(lambda x: 0 if x[2:] == '???' else int(x[2:]))
+        union_df['Asn'] = union_df['Asn'].apply(lambda x: 0 if x.partition(' ')[0][2:] == '???' else int(x.partition(' ')[0][2:]))
         # Join with ASN dataframe and retain requried columns
         union_df = union_df.merge(asn_df, on='Asn', how='left')[['Ip','Asn','As_name']]
         # Pair up adjacent rows using concat and drop last row

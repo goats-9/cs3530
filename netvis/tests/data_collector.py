@@ -7,7 +7,7 @@ def collect_data(urlfile, excel_file):
     L = fh.readlines()
     ngraph = nv.NetGraph.NetGraph()
     for line in L:
-        ngraph.traceroute(line)
+        ngraph.traceroute(line.rstrip())
     ngraph.save(excel_file)
 
 # Call the function here with correct arguments
