@@ -32,6 +32,7 @@ class NetGraph:
         self.nodes = nodes
         self.edge_list = edge_list
         self.source = source
+        self.destinations = ['128.36.233.71', '118.214.38.14', '45.60.15.134','23.192.59.241','13.91.95.74','194.193.29.204','94.182.146.39','45.60.110.27','130.208.165.186','104.18.9.132']
     
     # Add to NetGraph by performing traceroute using mtr
     def traceroute(self, dest, logfile):
@@ -88,7 +89,8 @@ class NetGraph:
         num_rows = self.nodes.shape[0]
         self.color = {"#FAF0E6":"BGcolor"}
         self.mp = {}
-        print(self.source)
+        # print(self.source["Src_ip"].values.tolist())
+        # print(self.source)
 
         # Adding edges in net
         for i in range(0,num_rows):
@@ -96,20 +98,24 @@ class NetGraph:
             title1 = f"AS Number: {Asn}\nAS Name: {ASName}"
             title2 = "AS Number unavailable"
 
-            if (Ip in self.source):  
-                print(Ip)             
-                net.add_node(Ip,shape='square',title="Source", physics=False)
+            if (Ip in self.source["Src_ip"].values.tolist()):  
+                if not (-1 in self.mp):
+                    c = self.generate_color()
+                    self.color[c] = "Source"
+                    self.mp[-1] = c  
+                    
+                net.add_node(Ip,shape="square",title="Source",color=self.mp[-1], physics=False)
             elif (Asn == 0):
                 if not(0 in self.mp):
                     c = self.generate_color()
-                    self.color[c] = "no ASN"
+                    self.color[c] = "no AS number available"
                     self.mp[0] = c
 
                 net.add_node(Ip,color=self.mp[0],title=title2)
             else:
                 if not (Asn in self.mp):
                     c = self.generate_color()
-                    self.color[c] = Asn
+                    self.color[c] = "AS number: " + str(Asn)
                     self.mp[Asn] = c
                     
                 net.add_node(Ip,color=self.mp[Asn],title=title1,shape='triangle')
@@ -118,14 +124,15 @@ class NetGraph:
         # edge will take color from both nodes
         net.inherit_edge_colors('both')
         # produces index.html
-        net.write_html('server/static/graph.html',notebook=False)
+        net.write_html('./static/graph.html',notebook=False)
 
-        # Storing legends data in csv
+        # returning legends
         legend_data = [list(self.color.keys())[1:],list(self.color.values())[1:]]
         df = pd.DataFrame(legend_data)
         df = df.T
         df.columns = ["Color","Description"]
-        df.to_csv('./data/legends/legends.csv',index=False,header=True)
+        print(df)
+        return (df["Color"].values.tolist(),df["Description"].values.tolist())
 
 # Utility to load NetGraph object from Excel file
 def load(filename):
