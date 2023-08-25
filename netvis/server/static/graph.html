@@ -1,0 +1,250 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 98vh;
+                 background-color: #FAF0E6;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 98vh;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#64b110", "id": "10.5.80.104", "label": "10.5.80.104", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#64b110", "id": "10.5.80.1", "label": "10.5.80.1", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#64b110", "id": "192.168.41.149", "label": "192.168.41.149", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#b63fdb", "id": "103.232.241.70", "label": "103.232.241.70", "shape": "triangle", "title": "AS Number: 59193\nAS Name: D3079306AFIN-AS IIT Hyderabad, IN"}, {"color": "#b63fdb", "id": "103.232.241.2", "label": "103.232.241.2", "shape": "triangle", "title": "AS Number: 59193\nAS Name: D3079306AFIN-AS IIT Hyderabad, IN"}, {"color": "#64b110", "id": "10.119.254.121", "label": "10.119.254.121", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#64b110", "id": "10.160.24.5", "label": "10.160.24.5", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#64b110", "id": "10.255.232.201", "label": "10.255.232.201", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#c19b58", "id": "180.149.48.18", "label": "180.149.48.18", "shape": "triangle", "title": "AS Number: 55824\nAS Name: NKN-CORE-NW NKN Core Network, IN"}, {"color": "#c19b58", "id": "180.149.48.6", "label": "180.149.48.6", "shape": "triangle", "title": "AS Number: 55824\nAS Name: NKN-CORE-NW NKN Core Network, IN"}, {"color": "#c19b58", "id": "180.149.48.20", "label": "180.149.48.20", "shape": "triangle", "title": "AS Number: 55824\nAS Name: NKN-CORE-NW NKN Core Network, IN"}, {"color": "#c19b58", "id": "180.149.48.13", "label": "180.149.48.13", "shape": "triangle", "title": "AS Number: 55824\nAS Name: NKN-CORE-NW NKN Core Network, IN"}, {"color": "#b0e9e3", "id": "163.253.1.228", "label": "163.253.1.228", "shape": "triangle", "title": "AS Number: 11537\nAS Name: INTERNET2-RESEARCH-EDU, US"}, {"color": "#b0e9e3", "id": "198.71.46.215", "label": "198.71.46.215", "shape": "triangle", "title": "AS Number: 11537\nAS Name: INTERNET2-RESEARCH-EDU, US"}, {"color": "#b285eb", "id": "130.132.11.1", "label": "130.132.11.1", "shape": "triangle", "title": "AS Number: 29\nAS Name: YALE-AS, US"}, {"color": "#b285eb", "id": "130.132.11.193", "label": "130.132.11.193", "shape": "triangle", "title": "AS Number: 29\nAS Name: YALE-AS, US"}, {"color": "#b285eb", "id": "128.36.233.71", "label": "128.36.233.71", "shape": "triangle", "title": "AS Number: 29\nAS Name: YALE-AS, US"}, {"color": "#64b110", "id": "10.255.222.33", "label": "10.255.222.33", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#b56962", "id": "115.247.100.29", "label": "115.247.100.29", "shape": "triangle", "title": "AS Number: 55836\nAS Name: RELIANCEJIO-IN Reliance Jio Infocomm Limited, IN"}, {"color": "#0be6b5", "id": "195.50.117.33", "label": "195.50.117.33", "shape": "triangle", "title": "AS Number: 3356\nAS Name: LEVEL3, US"}, {"color": "#0be6b5", "id": "4.69.166.2", "label": "4.69.166.2", "shape": "triangle", "title": "AS Number: 3356\nAS Name: LEVEL3, US"}, {"color": "#0be6b5", "id": "4.68.70.66", "label": "4.68.70.66", "shape": "triangle", "title": "AS Number: 3356\nAS Name: LEVEL3, US"}, {"color": "#6cfb8d", "id": "208.185.22.10", "label": "208.185.22.10", "shape": "triangle", "title": "AS Number: 6461\nAS Name: ZAYO-6461, US"}, {"color": "#e2727e", "id": "23.192.49.221", "label": "23.192.49.221", "shape": "triangle", "title": "AS Number: 16625\nAS Name: AKAMAI-AS, US"}, {"color": "#64b110", "id": "10.255.221.33", "label": "10.255.221.33", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#8436aa", "id": "129.250.3.16", "label": "129.250.3.16", "shape": "triangle", "title": "AS Number: 2914\nAS Name: NTT-LTD-2914, US"}, {"color": "#8436aa", "id": "129.250.2.166", "label": "129.250.2.166", "shape": "triangle", "title": "AS Number: 2914\nAS Name: NTT-LTD-2914, US"}, {"color": "#8436aa", "id": "129.250.4.152", "label": "129.250.4.152", "shape": "triangle", "title": "AS Number: 2914\nAS Name: NTT-LTD-2914, US"}, {"color": "#8436aa", "id": "129.250.4.18", "label": "129.250.4.18", "shape": "triangle", "title": "AS Number: 2914\nAS Name: NTT-LTD-2914, US"}, {"color": "#8436aa", "id": "128.241.13.3", "label": "128.241.13.3", "shape": "triangle", "title": "AS Number: 2914\nAS Name: NTT-LTD-2914, US"}, {"color": "#c365a2", "id": "107.154.10.242", "label": "107.154.10.242", "shape": "triangle", "title": "AS Number: 19551\nAS Name: INCAPSULA, US"}, {"color": "#c365a2", "id": "45.60.17.134", "label": "45.60.17.134", "shape": "triangle", "title": "AS Number: 19551\nAS Name: INCAPSULA, US"}, {"color": "#0be6b5", "id": "4.7.26.61", "label": "4.7.26.61", "shape": "triangle", "title": "AS Number: 3356\nAS Name: LEVEL3, US"}, {"color": "#0be6b5", "id": "4.59.55.2", "label": "4.59.55.2", "shape": "triangle", "title": "AS Number: 3356\nAS Name: LEVEL3, US"}, {"color": "#3314f5", "id": "23.203.155.40", "label": "23.203.155.40", "shape": "triangle", "title": "AS Number: 20940\nAS Name: AKAMAI-ASN1, NL"}, {"color": "#3314f5", "id": "23.193.112.219", "label": "23.193.112.219", "shape": "triangle", "title": "AS Number: 20940\nAS Name: AKAMAI-ASN1, NL"}, {"color": "#3314f5", "id": "23.32.63.34", "label": "23.32.63.34", "shape": "triangle", "title": "AS Number: 20940\nAS Name: AKAMAI-ASN1, NL"}, {"color": "#3314f5", "id": "23.209.163.35", "label": "23.209.163.35", "shape": "triangle", "title": "AS Number: 20940\nAS Name: AKAMAI-ASN1, NL"}, {"color": "#3314f5", "id": "23.203.145.249", "label": "23.203.145.249", "shape": "triangle", "title": "AS Number: 20940\nAS Name: AKAMAI-ASN1, NL"}, {"color": "#e2727e", "id": "104.86.254.7", "label": "104.86.254.7", "shape": "triangle", "title": "AS Number: 16625\nAS Name: AKAMAI-AS, US"}, {"color": "#64b110", "id": "10.152.7.214", "label": "10.152.7.214", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#7d7af3", "id": "104.44.12.6", "label": "104.44.12.6", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.230.6", "label": "104.44.230.6", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.34.39", "label": "104.44.34.39", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.30.230", "label": "104.44.30.230", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.18.161", "label": "104.44.18.161", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.19.130", "label": "104.44.19.130", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.29.96", "label": "104.44.29.96", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.19.85", "label": "104.44.19.85", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.7.69", "label": "104.44.7.69", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.23.75", "label": "104.44.23.75", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "13.91.95.74", "label": "13.91.95.74", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#2dc1ea", "id": "210.57.38.114", "label": "210.57.38.114", "shape": "triangle", "title": "AS Number: 4637\nAS Name: ASN-TELSTRA-GLOBAL Telstra Global, HK"}, {"color": "#2dc1ea", "id": "202.84.224.198", "label": "202.84.224.198", "shape": "triangle", "title": "AS Number: 4637\nAS Name: ASN-TELSTRA-GLOBAL Telstra Global, HK"}, {"color": "#2dc1ea", "id": "202.84.141.238", "label": "202.84.141.238", "shape": "triangle", "title": "AS Number: 4637\nAS Name: ASN-TELSTRA-GLOBAL Telstra Global, HK"}, {"color": "#2dc1ea", "id": "202.84.221.201", "label": "202.84.221.201", "shape": "triangle", "title": "AS Number: 4637\nAS Name: ASN-TELSTRA-GLOBAL Telstra Global, HK"}, {"color": "#2dc1ea", "id": "202.84.140.34", "label": "202.84.140.34", "shape": "triangle", "title": "AS Number: 4637\nAS Name: ASN-TELSTRA-GLOBAL Telstra Global, HK"}, {"color": "#cdf1ed", "id": "203.50.13.97", "label": "203.50.13.97", "shape": "triangle", "title": "AS Number: 1221\nAS Name: ASN-TELSTRA Telstra Corporation Ltd, AU"}, {"color": "#cdf1ed", "id": "203.50.6.100", "label": "203.50.6.100", "shape": "triangle", "title": "AS Number: 1221\nAS Name: ASN-TELSTRA Telstra Corporation Ltd, AU"}, {"color": "#cdf1ed", "id": "203.50.6.107", "label": "203.50.6.107", "shape": "triangle", "title": "AS Number: 1221\nAS Name: ASN-TELSTRA Telstra Corporation Ltd, AU"}, {"color": "#cdf1ed", "id": "203.50.11.173", "label": "203.50.11.173", "shape": "triangle", "title": "AS Number: 1221\nAS Name: ASN-TELSTRA Telstra Corporation Ltd, AU"}, {"color": "#cdf1ed", "id": "203.54.190.234", "label": "203.54.190.234", "shape": "triangle", "title": "AS Number: 1221\nAS Name: ASN-TELSTRA Telstra Corporation Ltd, AU"}, {"color": "#2c6c58", "id": "92.61.237.46", "label": "92.61.237.46", "shape": "triangle", "title": "AS Number: 25003\nAS Name: INTERNET_BINAT, IL"}, {"color": "#100d4b", "id": "130.117.48.137", "label": "130.117.48.137", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "154.54.60.169", "label": "154.54.60.169", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "154.54.58.233", "label": "154.54.58.233", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "154.54.56.190", "label": "154.54.56.190", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "154.25.14.234", "label": "154.25.14.234", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "149.11.21.170", "label": "149.11.21.170", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#c75b58", "id": "85.132.90.158", "label": "85.132.90.158", "shape": "triangle", "title": "AS Number: 29049\nAS Name: DELTA-TELECOM-AS International Communication Operator, AZ"}, {"color": "#15572e", "id": "94.182.144.138", "label": "94.182.144.138", "shape": "triangle", "title": "AS Number: 31549\nAS Name: RASANA, IR"}, {"color": "#100d4b", "id": "154.54.37.246", "label": "154.54.37.246", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "130.117.14.54", "label": "130.117.14.54", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#05f500", "id": "62.115.124.54", "label": "62.115.124.54", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#05f500", "id": "62.115.112.242", "label": "62.115.112.242", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#05f500", "id": "62.115.123.125", "label": "62.115.123.125", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#05f500", "id": "62.115.55.139", "label": "62.115.55.139", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#c365a2", "id": "107.154.249.27", "label": "107.154.249.27", "shape": "triangle", "title": "AS Number: 19551\nAS Name: INCAPSULA, US"}, {"color": "#c1df7a", "id": "109.105.98.104", "label": "109.105.98.104", "shape": "triangle", "title": "AS Number: 2603\nAS Name: NORDUNET, DK"}, {"color": "#c1df7a", "id": "109.105.97.125", "label": "109.105.97.125", "shape": "triangle", "title": "AS Number: 2603\nAS Name: NORDUNET, DK"}, {"color": "#c1df7a", "id": "109.105.97.42", "label": "109.105.97.42", "shape": "triangle", "title": "AS Number: 2603\nAS Name: NORDUNET, DK"}, {"color": "#c1df7a", "id": "109.105.102.181", "label": "109.105.102.181", "shape": "triangle", "title": "AS Number: 2603\nAS Name: NORDUNET, DK"}, {"color": "#acc004", "id": "130.208.17.114", "label": "130.208.17.114", "shape": "triangle", "title": "AS Number: 15474\nAS Name: RHNET SURISRHnet, IS"}, {"color": "#acc004", "id": "130.208.18.174", "label": "130.208.18.174", "shape": "triangle", "title": "AS Number: 15474\nAS Name: RHNET SURISRHnet, IS"}, {"color": "#acc004", "id": "130.208.160.178", "label": "130.208.160.178", "shape": "triangle", "title": "AS Number: 15474\nAS Name: RHNET SURISRHnet, IS"}, {"color": "#acc004", "id": "130.208.165.186", "label": "130.208.165.186", "shape": "triangle", "title": "AS Number: 15474\nAS Name: RHNET SURISRHnet, IS"}, {"color": "#487c82", "id": "162.158.226.122", "label": "162.158.226.122", "shape": "triangle", "title": "AS Number: 13335\nAS Name: CLOUDFLARENET, US"}, {"color": "#487c82", "id": "172.71.196.4", "label": "172.71.196.4", "shape": "triangle", "title": "AS Number: 13335\nAS Name: CLOUDFLARENET, US"}, {"color": "#487c82", "id": "104.18.8.132", "label": "104.18.8.132", "shape": "triangle", "title": "AS Number: 13335\nAS Name: CLOUDFLARENET, US"}, {"color": "#64b110", "id": "192.168.1.38", "label": "192.168.1.38", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#64b110", "id": "192.168.1.1", "label": "192.168.1.1", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#64b110", "id": "172.27.61.1", "label": "172.27.61.1", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#715704", "id": "14.192.3.69", "label": "14.192.3.69", "shape": "triangle", "title": "AS Number: 18229\nAS Name: CTRLS-AS-IN CtrlS, IN"}, {"color": "#5dd6b4", "id": "103.255.145.45", "label": "103.255.145.45", "shape": "triangle", "title": "AS Number: 150008\nAS Name: PEL-AS-IN Pioneer Elabs Ltd., IN"}, {"color": "#715704", "id": "137.59.200.18", "label": "137.59.200.18", "shape": "triangle", "title": "AS Number: 18229\nAS Name: CTRLS-AS-IN CtrlS, IN"}, {"color": "#1ad92f", "id": "14.142.71.189", "label": "14.142.71.189", "shape": "triangle", "title": "AS Number: 4755\nAS Name: TATACOMM-AS TATA Communications formerly VSNL is Leading ISP"}, {"color": "#64b110", "id": "172.25.81.134", "label": "172.25.81.134", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#e21982", "id": "180.87.38.5", "label": "180.87.38.5", "shape": "triangle", "title": "AS Number: 6453\nAS Name: AS6453, US"}, {"color": "#e21982", "id": "195.219.174.16", "label": "195.219.174.16", "shape": "triangle", "title": "AS Number: 6453\nAS Name: AS6453, US"}, {"color": "#e21982", "id": "80.231.153.49", "label": "80.231.153.49", "shape": "triangle", "title": "AS Number: 6453\nAS Name: AS6453, US"}, {"color": "#b56962", "id": "136.232.229.229", "label": "136.232.229.229", "shape": "triangle", "title": "AS Number: 55836\nAS Name: RELIANCEJIO-IN Reliance Jio Infocomm Limited, IN"}, {"color": "#b56962", "id": "49.44.187.5", "label": "49.44.187.5", "shape": "triangle", "title": "AS Number: 55836\nAS Name: RELIANCEJIO-IN Reliance Jio Infocomm Limited, IN"}, {"color": "#e2727e", "id": "118.214.38.14", "label": "118.214.38.14", "shape": "triangle", "title": "AS Number: 16625\nAS Name: AKAMAI-AS, US"}, {"color": "#55b24e", "id": "59.145.146.105", "label": "59.145.146.105", "shape": "triangle", "title": "AS Number: 9498\nAS Name: BBIL-AP BHARTI Airtel Ltd., IN"}, {"color": "#55b24e", "id": "116.119.73.104", "label": "116.119.73.104", "shape": "triangle", "title": "AS Number: 9498\nAS Name: BBIL-AP BHARTI Airtel Ltd., IN"}, {"color": "#05f500", "id": "62.115.42.118", "label": "62.115.42.118", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#05f500", "id": "62.115.124.56", "label": "62.115.124.56", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#05f500", "id": "62.115.122.159", "label": "62.115.122.159", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#05f500", "id": "62.115.119.231", "label": "62.115.119.231", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#05f500", "id": "62.115.54.67", "label": "62.115.54.67", "shape": "triangle", "title": "AS Number: 1299\nAS Name: TWELVE99 Arelion, fka Telia Carrier, SE"}, {"color": "#55b24e", "id": "182.79.245.6", "label": "182.79.245.6", "shape": "triangle", "title": "AS Number: 9498\nAS Name: BBIL-AP BHARTI Airtel Ltd., IN"}, {"color": "#64b110", "id": "206.82.104.62", "label": "206.82.104.62", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#e2727e", "id": "104.127.170.77", "label": "104.127.170.77", "shape": "triangle", "title": "AS Number: 16625\nAS Name: AKAMAI-AS, US"}, {"color": "#715704", "id": "202.65.133.42", "label": "202.65.133.42", "shape": "triangle", "title": "AS Number: 18229\nAS Name: CTRLS-AS-IN CtrlS, IN"}, {"color": "#7d7af3", "id": "104.44.36.137", "label": "104.44.36.137", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.55.183", "label": "104.44.55.183", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.23.253", "label": "104.44.23.253", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#7d7af3", "id": "104.44.23.71", "label": "104.44.23.71", "shape": "triangle", "title": "AS Number: 8075\nAS Name: MICROSOFT-CORP-MSN-AS-BLOCK, US"}, {"color": "#715704", "id": "137.59.200.16", "label": "137.59.200.16", "shape": "triangle", "title": "AS Number: 18229\nAS Name: CTRLS-AS-IN CtrlS, IN"}, {"color": "#7df82f", "id": "122.15.230.90", "label": "122.15.230.90", "shape": "triangle", "title": "AS Number: 55410\nAS Name: VIL-AS-AP Vodafone Idea Ltd, IN"}, {"color": "#64b110", "id": "182.19.108.215", "label": "182.19.108.215", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#2dc1ea", "id": "210.176.138.157", "label": "210.176.138.157", "shape": "triangle", "title": "AS Number: 4637\nAS Name: ASN-TELSTRA-GLOBAL Telstra Global, HK"}, {"color": "#2dc1ea", "id": "202.84.249.253", "label": "202.84.249.253", "shape": "triangle", "title": "AS Number: 4637\nAS Name: ASN-TELSTRA-GLOBAL Telstra Global, HK"}, {"color": "#2c6c58", "id": "92.61.237.50", "label": "92.61.237.50", "shape": "triangle", "title": "AS Number: 25003\nAS Name: INTERNET_BINAT, IL"}, {"color": "#55b24e", "id": "125.16.25.17", "label": "125.16.25.17", "shape": "triangle", "title": "AS Number: 9498\nAS Name: BBIL-AP BHARTI Airtel Ltd., IN"}, {"color": "#55b24e", "id": "116.119.68.60", "label": "116.119.68.60", "shape": "triangle", "title": "AS Number: 9498\nAS Name: BBIL-AP BHARTI Airtel Ltd., IN"}, {"color": "#100d4b", "id": "149.14.224.161", "label": "149.14.224.161", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "130.117.48.205", "label": "130.117.48.205", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "130.117.51.42", "label": "130.117.51.42", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "130.117.0.142", "label": "130.117.0.142", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#100d4b", "id": "154.54.37.30", "label": "154.54.37.30", "shape": "triangle", "title": "AS Number: 174\nAS Name: COGENT-174, US"}, {"color": "#15572e", "id": "94.182.146.39", "label": "94.182.146.39", "shape": "triangle", "title": "AS Number: 31549\nAS Name: RASANA, IR"}, {"color": "#55b24e", "id": "116.119.44.136", "label": "116.119.44.136", "shape": "triangle", "title": "AS Number: 9498\nAS Name: BBIL-AP BHARTI Airtel Ltd., IN"}, {"color": "#64b110", "id": "206.72.211.119", "label": "206.72.211.119", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#c365a2", "id": "45.60.110.27", "label": "45.60.110.27", "shape": "triangle", "title": "AS Number: 19551\nAS Name: INCAPSULA, US"}, {"color": "#55b24e", "id": "116.119.57.19", "label": "116.119.57.19", "shape": "triangle", "title": "AS Number: 9498\nAS Name: BBIL-AP BHARTI Airtel Ltd., IN"}, {"color": "#64b110", "id": "198.32.160.21", "label": "198.32.160.21", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#c1df7a", "id": "109.105.97.65", "label": "109.105.97.65", "shape": "triangle", "title": "AS Number: 2603\nAS Name: NORDUNET, DK"}, {"color": "#64b110", "id": "198.18.5.15", "label": "198.18.5.15", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#64b110", "id": "103.77.108.11", "label": "103.77.108.11", "shape": "dot", "title": "AS Number unavailable"}, {"color": "#487c82", "id": "172.69.82.5", "label": "172.69.82.5", "shape": "triangle", "title": "AS Number: 13335\nAS Name: CLOUDFLARENET, US"}, {"color": "#487c82", "id": "104.18.9.132", "label": "104.18.9.132", "shape": "triangle", "title": "AS Number: 13335\nAS Name: CLOUDFLARENET, US"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "10.5.80.104", "to": "10.5.80.1"}, {"arrows": "to", "from": "10.5.80.1", "to": "192.168.41.149"}, {"arrows": "to", "from": "192.168.41.149", "to": "103.232.241.70"}, {"arrows": "to", "from": "103.232.241.70", "to": "103.232.241.2"}, {"arrows": "to", "from": "103.232.241.2", "to": "10.119.254.121"}, {"arrows": "to", "from": "10.119.254.121", "to": "10.160.24.5"}, {"arrows": "to", "from": "10.160.24.5", "to": "10.255.232.201"}, {"arrows": "to", "from": "10.255.232.201", "to": "180.149.48.18"}, {"arrows": "to", "from": "180.149.48.18", "to": "180.149.48.6"}, {"arrows": "to", "from": "180.149.48.6", "to": "180.149.48.20"}, {"arrows": "to", "from": "180.149.48.20", "to": "180.149.48.13"}, {"arrows": "to", "from": "180.149.48.13", "to": "163.253.1.228"}, {"arrows": "to", "from": "163.253.1.228", "to": "198.71.46.215"}, {"arrows": "to", "from": "198.71.46.215", "to": "130.132.11.1"}, {"arrows": "to", "from": "130.132.11.1", "to": "130.132.11.193"}, {"arrows": "to", "from": "130.132.11.193", "to": "128.36.233.71"}, {"arrows": "to", "from": "10.160.24.5", "to": "10.255.222.33"}, {"arrows": "to", "from": "10.255.222.33", "to": "115.247.100.29"}, {"arrows": "to", "from": "115.247.100.29", "to": "195.50.117.33"}, {"arrows": "to", "from": "195.50.117.33", "to": "4.69.166.2"}, {"arrows": "to", "from": "4.69.166.2", "to": "4.68.70.66"}, {"arrows": "to", "from": "4.68.70.66", "to": "208.185.22.10"}, {"arrows": "to", "from": "208.185.22.10", "to": "23.192.49.221"}, {"arrows": "to", "from": "10.160.24.5", "to": "10.255.221.33"}, {"arrows": "to", "from": "10.255.221.33", "to": "115.247.100.29"}, {"arrows": "to", "from": "115.247.100.29", "to": "129.250.3.16"}, {"arrows": "to", "from": "129.250.3.16", "to": "129.250.2.166"}, {"arrows": "to", "from": "129.250.2.166", "to": "129.250.4.152"}, {"arrows": "to", "from": "129.250.4.152", "to": "129.250.4.18"}, {"arrows": "to", "from": "129.250.4.18", "to": "128.241.13.3"}, {"arrows": "to", "from": "128.241.13.3", "to": "107.154.10.242"}, {"arrows": "to", "from": "107.154.10.242", "to": "45.60.17.134"}, {"arrows": "to", "from": "115.247.100.29", "to": "4.7.26.61"}, {"arrows": "to", "from": "4.7.26.61", "to": "4.59.55.2"}, {"arrows": "to", "from": "4.59.55.2", "to": "23.203.155.40"}, {"arrows": "to", "from": "23.203.155.40", "to": "23.193.112.219"}, {"arrows": "to", "from": "23.193.112.219", "to": "23.32.63.34"}, {"arrows": "to", "from": "23.32.63.34", "to": "23.209.163.35"}, {"arrows": "to", "from": "23.209.163.35", "to": "23.203.145.249"}, {"arrows": "to", "from": "23.203.145.249", "to": "104.86.254.7"}, {"arrows": "to", "from": "10.255.232.201", "to": "10.152.7.214"}, {"arrows": "to", "from": "10.152.7.214", "to": "104.44.12.6"}, {"arrows": "to", "from": "104.44.12.6", "to": "104.44.230.6"}, {"arrows": "to", "from": "104.44.230.6", "to": "104.44.34.39"}, {"arrows": "to", "from": "104.44.34.39", "to": "104.44.30.230"}, {"arrows": "to", "from": "104.44.30.230", "to": "104.44.18.161"}, {"arrows": "to", "from": "104.44.18.161", "to": "104.44.19.130"}, {"arrows": "to", "from": "104.44.19.130", "to": "104.44.29.96"}, {"arrows": "to", "from": "104.44.29.96", "to": "104.44.19.85"}, {"arrows": "to", "from": "104.44.19.85", "to": "104.44.7.69"}, {"arrows": "to", "from": "104.44.7.69", "to": "104.44.23.75"}, {"arrows": "to", "from": "104.44.23.75", "to": "13.91.95.74"}, {"arrows": "to", "from": "115.247.100.29", "to": "210.57.38.114"}, {"arrows": "to", "from": "210.57.38.114", "to": "202.84.224.198"}, {"arrows": "to", "from": "202.84.224.198", "to": "202.84.224.198"}, {"arrows": "to", "from": "202.84.224.198", "to": "202.84.141.238"}, {"arrows": "to", "from": "202.84.141.238", "to": "202.84.221.201"}, {"arrows": "to", "from": "202.84.221.201", "to": "202.84.140.34"}, {"arrows": "to", "from": "202.84.140.34", "to": "203.50.13.97"}, {"arrows": "to", "from": "203.50.13.97", "to": "203.50.6.100"}, {"arrows": "to", "from": "203.50.6.100", "to": "203.50.6.107"}, {"arrows": "to", "from": "203.50.6.107", "to": "203.50.11.173"}, {"arrows": "to", "from": "203.50.11.173", "to": "203.54.190.234"}, {"arrows": "to", "from": "203.54.190.234", "to": "92.61.237.46"}, {"arrows": "to", "from": "115.247.100.29", "to": "130.117.48.137"}, {"arrows": "to", "from": "130.117.48.137", "to": "154.54.60.169"}, {"arrows": "to", "from": "154.54.60.169", "to": "154.54.58.233"}, {"arrows": "to", "from": "154.54.58.233", "to": "154.54.56.190"}, {"arrows": "to", "from": "154.54.56.190", "to": "154.25.14.234"}, {"arrows": "to", "from": "154.25.14.234", "to": "149.11.21.170"}, {"arrows": "to", "from": "149.11.21.170", "to": "85.132.90.158"}, {"arrows": "to", "from": "85.132.90.158", "to": "94.182.144.138"}, {"arrows": "to", "from": "115.247.100.29", "to": "154.54.37.246"}, {"arrows": "to", "from": "154.54.37.246", "to": "130.117.14.54"}, {"arrows": "to", "from": "130.117.14.54", "to": "62.115.124.54"}, {"arrows": "to", "from": "62.115.124.54", "to": "62.115.112.242"}, {"arrows": "to", "from": "62.115.112.242", "to": "62.115.123.125"}, {"arrows": "to", "from": "62.115.123.125", "to": "62.115.55.139"}, {"arrows": "to", "from": "62.115.55.139", "to": "107.154.249.27"}, {"arrows": "to", "from": "180.149.48.20", "to": "109.105.98.104"}, {"arrows": "to", "from": "109.105.98.104", "to": "109.105.97.125"}, {"arrows": "to", "from": "109.105.97.125", "to": "109.105.97.42"}, {"arrows": "to", "from": "109.105.97.42", "to": "109.105.102.181"}, {"arrows": "to", "from": "109.105.102.181", "to": "130.208.17.114"}, {"arrows": "to", "from": "130.208.17.114", "to": "130.208.18.174"}, {"arrows": "to", "from": "130.208.18.174", "to": "130.208.160.178"}, {"arrows": "to", "from": "130.208.160.178", "to": "130.208.165.186"}, {"arrows": "to", "from": "115.247.100.29", "to": "162.158.226.122"}, {"arrows": "to", "from": "162.158.226.122", "to": "172.71.196.4"}, {"arrows": "to", "from": "172.71.196.4", "to": "104.18.8.132"}, {"arrows": "to", "from": "192.168.1.38", "to": "192.168.1.1"}, {"arrows": "to", "from": "192.168.1.1", "to": "172.27.61.1"}, {"arrows": "to", "from": "172.27.61.1", "to": "14.192.3.69"}, {"arrows": "to", "from": "14.192.3.69", "to": "103.255.145.45"}, {"arrows": "to", "from": "103.255.145.45", "to": "137.59.200.18"}, {"arrows": "to", "from": "137.59.200.18", "to": "14.142.71.189"}, {"arrows": "to", "from": "14.142.71.189", "to": "172.25.81.134"}, {"arrows": "to", "from": "172.25.81.134", "to": "180.87.38.5"}, {"arrows": "to", "from": "180.87.38.5", "to": "195.219.174.16"}, {"arrows": "to", "from": "195.219.174.16", "to": "80.231.153.49"}, {"arrows": "to", "from": "80.231.153.49", "to": "130.132.11.193"}, {"arrows": "to", "from": "137.59.200.18", "to": "136.232.229.229"}, {"arrows": "to", "from": "136.232.229.229", "to": "49.44.187.5"}, {"arrows": "to", "from": "49.44.187.5", "to": "118.214.38.14"}, {"arrows": "to", "from": "137.59.200.18", "to": "59.145.146.105"}, {"arrows": "to", "from": "59.145.146.105", "to": "116.119.73.104"}, {"arrows": "to", "from": "116.119.73.104", "to": "62.115.42.118"}, {"arrows": "to", "from": "62.115.42.118", "to": "62.115.124.56"}, {"arrows": "to", "from": "62.115.124.56", "to": "62.115.122.159"}, {"arrows": "to", "from": "62.115.122.159", "to": "62.115.119.231"}, {"arrows": "to", "from": "62.115.119.231", "to": "62.115.54.67"}, {"arrows": "to", "from": "62.115.54.67", "to": "45.60.17.134"}, {"arrows": "to", "from": "59.145.146.105", "to": "182.79.245.6"}, {"arrows": "to", "from": "182.79.245.6", "to": "206.82.104.62"}, {"arrows": "to", "from": "206.82.104.62", "to": "104.127.170.77"}, {"arrows": "to", "from": "103.255.145.45", "to": "202.65.133.42"}, {"arrows": "to", "from": "202.65.133.42", "to": "104.44.36.137"}, {"arrows": "to", "from": "104.44.36.137", "to": "104.44.55.183"}, {"arrows": "to", "from": "104.44.55.183", "to": "104.44.23.253"}, {"arrows": "to", "from": "104.44.23.253", "to": "104.44.19.130"}, {"arrows": "to", "from": "104.44.7.69", "to": "104.44.23.71"}, {"arrows": "to", "from": "103.255.145.45", "to": "137.59.200.16"}, {"arrows": "to", "from": "137.59.200.16", "to": "122.15.230.90"}, {"arrows": "to", "from": "122.15.230.90", "to": "182.19.108.215"}, {"arrows": "to", "from": "182.19.108.215", "to": "210.176.138.157"}, {"arrows": "to", "from": "210.176.138.157", "to": "202.84.249.253"}, {"arrows": "to", "from": "202.84.249.253", "to": "202.84.140.34"}, {"arrows": "to", "from": "203.54.190.234", "to": "92.61.237.50"}, {"arrows": "to", "from": "137.59.200.16", "to": "125.16.25.17"}, {"arrows": "to", "from": "125.16.25.17", "to": "116.119.68.60"}, {"arrows": "to", "from": "116.119.68.60", "to": "149.14.224.161"}, {"arrows": "to", "from": "149.14.224.161", "to": "130.117.48.205"}, {"arrows": "to", "from": "130.117.48.205", "to": "130.117.51.42"}, {"arrows": "to", "from": "130.117.51.42", "to": "130.117.0.142"}, {"arrows": "to", "from": "130.117.0.142", "to": "154.54.37.30"}, {"arrows": "to", "from": "154.54.37.30", "to": "154.25.14.234"}, {"arrows": "to", "from": "94.182.144.138", "to": "94.182.146.39"}, {"arrows": "to", "from": "125.16.25.17", "to": "116.119.44.136"}, {"arrows": "to", "from": "116.119.44.136", "to": "206.72.211.119"}, {"arrows": "to", "from": "206.72.211.119", "to": "45.60.110.27"}, {"arrows": "to", "from": "125.16.25.17", "to": "116.119.57.19"}, {"arrows": "to", "from": "116.119.57.19", "to": "198.32.160.21"}, {"arrows": "to", "from": "198.32.160.21", "to": "109.105.97.65"}, {"arrows": "to", "from": "109.105.97.65", "to": "109.105.97.125"}, {"arrows": "to", "from": "202.65.133.42", "to": "198.18.5.15"}, {"arrows": "to", "from": "198.18.5.15", "to": "103.77.108.11"}, {"arrows": "to", "from": "103.77.108.11", "to": "172.69.82.5"}, {"arrows": "to", "from": "172.69.82.5", "to": "104.18.9.132"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": "both"
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

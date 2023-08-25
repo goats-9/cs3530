@@ -89,6 +89,7 @@ class NetGraph:
         num_rows = self.nodes.shape[0]
         self.color = {"#FAF0E6":"BGcolor"}
         self.mp = {}
+        print(self.source)
 
         # Adding edges in net
         for i in range(0,num_rows):
@@ -96,7 +97,7 @@ class NetGraph:
             title1 = f"AS Number: {Asn}\nAS Name: {ASName}"
             title2 = "AS Number unavailable"
 
-            if (Ip in self.destination):               
+            if (Ip in self.source):               
                 net.add_node(Ip,shape='square',title="Destination",physics="fixed")
             elif (Asn == 0):
                 if not(0 in self.mp):
@@ -117,7 +118,7 @@ class NetGraph:
         # edge will take color from both nodes
         net.inherit_edge_colors('both')
         # produces index.html
-        net.write_html('static/graph.html',notebook=False)
+        net.write_html('server/static/graph.html',notebook=False)
 
         # Storing legends data in csv
         legend_data = [list(self.color.keys())[1:],list(self.color.values())[1:]]
