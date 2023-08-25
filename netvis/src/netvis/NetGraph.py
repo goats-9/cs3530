@@ -88,7 +88,6 @@ class NetGraph:
         num_rows = self.nodes.shape[0]
         self.color = {"#FAF0E6":"BGcolor"}
         self.mp = {}
-        print(self.source)
 
         # Adding edges in net
         for i in range(0,num_rows):
