@@ -44,10 +44,11 @@
 \def\inputGnumericTable{}                                 %%
 
 \lstset{
-%language=C,
+language=bash,
 frame=single, 
 breaklines=true,
 columns=fullflexible,
+basicstyle=\ttfamily,
 }
 %\lstset{
 %language=tex,
@@ -117,13 +118,131 @@ this library.
 
 \section{Implementation}
 
-\texttt{netvis} has been implemented as a \texttt{pip} package, and can be
-installed by typing the following in a terminal window.
+\texttt{netvis} is a \texttt{python} package, installable using \texttt{pip}. In
+the following subsections, we describe the installation and sailent features
+provided by this library.
+
+The entire source code is hosted on
+\href{https://github.com/goats-9/cs3530-assignments/tree/main/netvis}{GitHub}.
+The verbose implementation details are provided as comments in the source code,
+which have been omitted here for brevity.
+
+\subsection{Installation}
+
+\texttt{netvis} can be installed by typing the following in a terminal window.
 
 \begin{lstlisting}
 pip install -e "git+https://github.com/goats-9/cs3530-assignments.git#egg=netvis&subdirectory=netvis"
 \end{lstlisting}
 
-The dependencies of the \texttt{netvis} package are:
+Alternatively, the library can be installed by cloning the aforementioned GitHub
+repository and issuing the following command in the \texttt{netvis} directory.
+\begin{lstlisting}
+pip install -e .
+\end{lstlisting}
+
+It is \emph{highly recommended} to install the package in a Python virtual
+environment.
+
+\subsection{Requirements}
+
+To help in the visualization of the topology of the Internet, \texttt{netvis}
+depends on the following Python packages.
+\begin{enumerate}
+     \item \href{https://pandas.pydata.org/}{\texttt{pandas}}. To process the
+     raw data obtained for visualization.
+     \item \href{https://openpyxl.readthedocs.io/en/stable/}{\texttt{openpyxl}}.
+     To handle raw data in Excel files.
+     \item \href{https://pyvis.readthedocs.io/en/latest/}{\texttt{pyvis}}. To
+     visualize the network in the form of a graph.
+\end{enumerate}
+
+Additionally, note that this library is suitable for Linux systems only, and
+also requires the executable
+\href{https://linux.die.net/man/8/mtr}{\texttt{mtr}} to be installed on the
+system.
+
+\subsection{Features}
+
+The sailent features of \texttt{netvis} are the following.
+\begin{enumerate}
+     \item A \texttt{NetGraph} object to abstract the topology of the Internet
+     into a directed graph, containing a list of nodes and edges.
+     \item Use of \texttt{mtr} (short for \emph{my traceroute}) with appropriate
+     arguments to obtain the entire sequence of hops from source to destination,
+     along with AS numbers of ISPs (if available) in CSV form for easy data
+     handling.
+     \item Provisions to save and load \texttt{NetGraph} objects to and from
+     Excel files so that they can be used in other Python scripts.
+     \item Provision to create a union of two \texttt{NetGraph} objects so that
+     the topology from multiple sources to multiple destinations is
+     \emph{integrated}.
+     \item Rendering of the graph depicting the topology in HTML, along with the
+     use of CSS and JS to make the graph interactive as well as show the legend.
+     The graph is present in \texttt{graph.html}, but the integrated legend is
+     displayed on rendering \texttt{index.html}.
+\end{enumerate}
+
+\section{Challenges}
+
+The authors wanted to automate the entire process of visualizing the internet
+topology. The following challenges were faced in the process.
+
+\begin{enumerate}
+     \item Whenever \texttt{netvis} is imported, a dataset about 30 MB in size
+     is downloaded and loaded into a \texttt{DataFrame} object. This may not be
+     suitable for systems with constraints on resources like memory or internet
+     speed (such as embedded systems).
+
+     A more suitable solution could have been hosting the data on a webserver
+     and making HTTP GET requests to a URL.
+     \item \texttt{pyvis} does not have a provision to provide a legend for easy
+     use of the generated graph. The authors worked around this using JavaScript
+     to create a legend.
+     \item The outputs of \texttt{mtr} did not include the source IP address. It
+     was manually added by making use of the Python standard library module
+     \href{https://docs.python.org/3/library/socket.html}{\texttt{socket}}.
+\end{enumerate}
+
+\section{Observations}
+The following conclusions can be made based on the data collected.
+
+\begin{enumerate}
+     \item From the raw data, sites hosted in countries east of India have
+     lesser RTTs (less than 200 ms) compared to sites hosted in countries to the
+     west of India (at least 200 ms).
+     \item The maximum RTT on average was experienced while pinging the site
+     \href{https://www.hi.is/}{\texttt{hi.is}}, which makes sense since the site
+     was hosted in Iceland. On the other hand, the minimum RTT was experienced
+     while pinging \href{https://www.isro.gov.in/}{\texttt{www.isro.gov.in}},
+     which is hosted in India, where all the source devices are.
+     \item 
+     \begin{enumerate}
+          \item Using the LAN service available in IITH (source IP
+          \texttt{10.5.80.104}), the packets always travelled through the ISP at
+          IITH, as expected. 
+          \item Using mobile data, the packets always went through Airtel, since
+          both SIM cards were registered to Airtel. 
+          \item Using personal WiFi network (not in campus, source IP
+          \texttt{192.168.1.38}), the packets went through
+          \href{https://www.ctrls.in/}{CtrlS datacenters}, which might mean that
+          the \href{https://reachtele.net/}{local ISP} uses these datacenters to
+          host and provide Internet services to their customers.
+     \end{enumerate}
+     \item By looking up the AS numbers, most of the sites chosen as
+     destinations are hosted in the USA (even those with non-American domains).
+\end{enumerate}
+
+\section{Resources}
+
+\begin{enumerate}
+     \item The raw and processed data is present in the \texttt{data} directory.
+     \item The scripts used to collect and visualize the data are present in the
+     \texttt{tests} directory.
+     \item The ASN dataset \texttt{data/asn.tsv} was taken and edited from
+     \href{https://asntool.com/}{\texttt{asntool.com}}.
+     \item The \href{https://hatch.pypa.io/latest/}{hatch} build system was used
+     to package the code.
+\end{enumerate}
 
 \end{document}
