@@ -13,6 +13,7 @@ keywords = []
 authors = [
   { name = "Gautam Singh", email = "goats.singh@gmail.com" },
   { name = "Varun Gupta", email = "thecodervarun@gmail.com" }, 
+  { name = "Anshul Sangrame", email = "anshul.sangrame@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
