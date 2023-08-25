@@ -89,8 +89,6 @@ class NetGraph:
         num_rows = self.nodes.shape[0]
         self.color = {"#FAF0E6":"BGcolor"}
         self.mp = {}
-        # print(self.source["Src_ip"].values.tolist())
-        # print(self.source)
 
         # Adding edges in net
         for i in range(0,num_rows):
@@ -131,7 +129,6 @@ class NetGraph:
         df = pd.DataFrame(legend_data)
         df = df.T
         df.columns = ["Color","Description"]
-        print(df)
         return (df["Color"].values.tolist(),df["Description"].values.tolist())
 
 # Utility to load NetGraph object from Excel file
