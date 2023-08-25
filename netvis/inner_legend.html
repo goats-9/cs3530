@@ -1,0 +1,46 @@
+<input type="file" id="csvFile" onchange="handleFile()" />
+<div id="output"></div>
+
+<script>
+    function handleFile() {
+        const fileInput = document.getElementById('csvFile');
+        const file = fileInput.files[0];
+        
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const csvData = event.target.result;
+                const tableHTML = csvToHtmlTable(csvData);
+                document.getElementById('output').innerHTML = tableHTML;
+            };
+            
+            reader.readAsText(file);
+        }
+    }
+
+    function csvToHtmlTable(csvData) {
+        const rows = csvData.split('\n').filter(row => row.trim() !== "");
+        let tableHTML = '<table border="1">';
+        
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].split(',');
+            if (i === 0) { // Assuming the first row contains headers
+                tableHTML += '<thead><tr>';
+                for (let j = 0; j < cells.length; j++) {
+                    tableHTML += `<th>${cells[j].trim()}</th>`;
+                }
+                tableHTML += '</tr></thead><tbody>';
+            } else {
+                tableHTML += '<tr>';
+                for (let j = 0; j < cells.length; j++) {
+                    tableHTML += `<td>${cells[j].trim()}</td>`;
+                }
+                tableHTML += '</tr>';
+            }
+        }
+        
+        tableHTML += '</tbody></table>';
+        return tableHTML;
+    }
+</script>
