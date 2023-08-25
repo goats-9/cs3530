@@ -22,6 +22,7 @@ class NetGraph:
     def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip'])):
         self.nodes = nodes
         self.edge_list = edge_list
+        self.destination = ['10.5.80.104','192.168.1.38','192.168.43.105','192.168.198.209','192.168.0.103']
     
     # Add to NetGraph by performing traceroute using mtr
     def traceroute(self, dest, logfile):
@@ -37,7 +38,10 @@ class NetGraph:
         union_df = union_df.loc[union_df['Ip'] != '???']
         union_df['Asn'] = union_df['Asn'].apply(lambda x: 0 if x.partition(' ')[0][2:] == '???' else int(x.partition(' ')[0][2:]))
         # Join with ASN dataframe and retain requried columns
-        ipaddr = socket.gethostbyname(socket.gethostname())
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ipaddr = s.getsockname()[0]
+        s.close()
         union_df = union_df.merge(asn_df, on='Asn', how='left')[['Ip','Asn','As_name']]
         # Add row for host IP
         new_row = pd.DataFrame({'Ip' : ipaddr, 'Asn' : 0, 'As_name' : None}, index=[0])
@@ -71,6 +75,7 @@ class NetGraph:
     # Display the NetGraph as a graph in HTML format
     def disp(self):
         net = Network(directed=True,height="98vh",bgcolor="#FAF0E6")
+        self.nodes.reset_index(inplace=True)
         num_rows = self.nodes.shape[0]
         self.color = {"#FAF0E6":"BGcolor"}
         self.mp = {}
@@ -78,12 +83,11 @@ class NetGraph:
         # Adding edges in net
         for i in range(0,num_rows):
             Asn, ASName, Ip = self.nodes.loc[i,["Asn","As_name","Ip"]]
-            if not pd.isna(ASName):
-                ASName = ASName.split(" ")[0]
             title1 = f"AS Number: {Asn}\nAS Name: {ASName}"
             title2 = "AS Number unavailable"
 
-            if (i == 0):                
+            if (Ip in self.destination):     
+                print('hello')           
                 net.add_node(Ip,shape='image',image='./data/Media/source.png',title=title2,physics="fixed")
             elif (Asn == 0):
                 if not(0 in self.mp):
@@ -107,8 +111,11 @@ class NetGraph:
         net.show('graph.html',notebook=False)
 
         # Storing legends data in csv
-        self.color = [self.color]
-        df = pd.DataFrame(self.color)
+        legend_data = [self.color.keys(),self.color.values()]
+        df = pd.DataFrame(legend_data)
+        df = df.T
+        df.columns = ["Color","Description"]
+        print(df)
         df.to_csv('legends.csv',index=False,header=True)
 
 # Utility to load NetGraph object from Excel file
