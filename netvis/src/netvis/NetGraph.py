@@ -28,11 +28,10 @@ are stored in an edge list.
 '''
 class NetGraph:
     # Initialize NetGraph object
-    def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip']), source=pd.DataFrame(columns=['Src_ip'])):
+    def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip']), source=pd.DataFrame({'Src_ip':get_ip()})):
         self.nodes = nodes
         self.edge_list = edge_list
-        # Obtain IP address of source
-        self.source = pd.DataFrame({'Src_ip':[get_ip()]})
+        self.source = source
     
     # Add to NetGraph by performing traceroute using mtr
     def traceroute(self, dest, logfile):
