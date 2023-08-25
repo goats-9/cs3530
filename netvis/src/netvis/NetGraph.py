@@ -96,9 +96,8 @@ class NetGraph:
             title1 = f"AS Number: {Asn}\nAS Name: {ASName}"
             title2 = "AS Number unavailable"
 
-            if (Ip in self.destination):     
-                print('hello')           
-                net.add_node(Ip,shape='image',image='./data/Media/source.png',title=title2,physics="fixed")
+            if (Ip in self.destination):               
+                net.add_node(Ip,shape='square',title="Destination",physics="fixed")
             elif (Asn == 0):
                 if not(0 in self.mp):
                     c = self.generate_color()
@@ -118,15 +117,14 @@ class NetGraph:
         # edge will take color from both nodes
         net.inherit_edge_colors('both')
         # produces index.html
-        net.show('graph.html',notebook=False)
+        net.write_html('graph.html',notebook=False)
 
         # Storing legends data in csv
-        legend_data = [self.color.keys(),self.color.values()]
+        legend_data = [list(self.color.keys())[1:],list(self.color.values())[1:]]
         df = pd.DataFrame(legend_data)
         df = df.T
         df.columns = ["Color","Description"]
-        print(df)
-        df.to_csv('legends.csv',index=False,header=True)
+        df.to_csv('./data/legends/legends.csv',index=False,header=True)
 
 # Utility to load NetGraph object from Excel file
 def load(filename):

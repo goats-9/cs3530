@@ -1,28 +1,10 @@
-<input type="file" id="csvFile" onchange="handleFile()" />
 <div id="output"></div>
 
 <script>
-    function handleFile() {
-        const fileInput = document.getElementById('csvFile');
-        const file = fileInput.files[0];
-        
-        if (file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(event) {
-                const csvData = event.target.result;
-                const tableHTML = csvToHtmlTable(csvData);
-                document.getElementById('output').innerHTML = tableHTML;
-            };
-            
-            reader.readAsText(file);
-        }
-    }
-
     function csvToHtmlTable(csvData) {
         const rows = csvData.split('\n').filter(row => row.trim() !== "");
         let tableHTML = '<table border="1">';
-        
+
         for (let i = 0; i < rows.length; i++) {
             const cells = rows[i].split(',');
             if (i === 0) { // Assuming the first row contains headers
@@ -39,8 +21,38 @@
                 tableHTML += '</tr>';
             }
         }
-        
+
         tableHTML += '</tbody></table>';
         return tableHTML;
     }
+
+    var request = new XMLHttpRequest();
+    request.open('GET', 'file:///home/anshul/programming/Computer%20Network/cs3530-assignments/netvis/legends.csv', true);
+    request.send(null);
+    request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+            var type = request.getResponseHeader('Content-Type');
+            if (type.indexOf("text") !== 1) {
+                console.log(request.responseText);
+                const csvData = request.responseText;
+                const tableHTML = csvToHtmlTable(csvData);
+                document.getElementById('output').innerHTML = tableHTML;
+            }
+        }
+    }
+    // const fileInput = document.getElementById('csvFile');
+    // const file = fileInput.files[0];
+
+    // if (file) {
+    //     const reader = new FileReader();
+
+    //     reader.onload = function (event) {
+    //         const csvData = event.target.result;
+    //         const tableHTML = csvToHtmlTable(csvData);
+    //         document.getElementById('output').innerHTML = tableHTML;
+    //     };
+
+    //     reader.readAsText(file);
+    // }
+
 </script>
