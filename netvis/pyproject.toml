@@ -32,9 +32,9 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/unknown/netvis#readme"
-Issues = "https://github.com/unknown/netvis/issues"
-Source = "https://github.com/unknown/netvis"
+Documentation = "https://github.com/goats-9/netvis#readme"
+Issues = "https://github.com/goats-9/netvis/issues"
+Source = "https://github.com/goats-9/netvis"
 
 [tool.hatch.version]
 path = "src/netvis/__about__.py"
@@ -153,6 +153,7 @@ omit = [
 [tool.coverage.paths]
 netvis = ["src/netvis", "*/netvis/src/netvis"]
 tests = ["tests", "*/netvis/tests"]
+data = ["data", "*/netvis/data"]
 
 [tool.coverage.report]
 exclude_lines = [
