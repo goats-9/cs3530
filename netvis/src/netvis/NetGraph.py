@@ -97,8 +97,9 @@ class NetGraph:
             title1 = f"AS Number: {Asn}\nAS Name: {ASName}"
             title2 = "AS Number unavailable"
 
-            if (Ip in self.source):               
-                net.add_node(Ip,shape='square',title="Destination",physics="fixed")
+            if (Ip in self.source):  
+                print(Ip)             
+                net.add_node(Ip,shape='square',title="Source", physics=False)
             elif (Asn == 0):
                 if not(0 in self.mp):
                     c = self.generate_color()
