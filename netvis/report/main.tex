@@ -132,13 +132,9 @@ which have been omitted here for brevity.
 \texttt{netvis} can be installed by typing the following in a terminal window.
 
 \begin{lstlisting}
-pip install -e "git+https://github.com/goats-9/cs3530-assignments.git#egg=netvis&subdirectory=netvis"
-\end{lstlisting}
-
-Alternatively, the library can be installed by cloning the aforementioned GitHub
-repository and issuing the following command in the \texttt{netvis} directory.
-\begin{lstlisting}
-pip install -e .
+$ git clone https://github.com/goats-9/cs3530-assignments
+$ cd cs3530-assignments/netvis
+$ pip install -e .
 \end{lstlisting}
 
 It is \emph{highly recommended} to install the package in a Python virtual
@@ -226,8 +222,8 @@ The following conclusions can be made based on the data collected.
           \item Using personal WiFi network (not in campus, source IP
           \texttt{192.168.1.38}), the packets went through
           \href{https://www.ctrls.in/}{CtrlS datacenters}, which might mean that
-          the \href{https://reachtele.net/}{local ISP} uses these datacenters to
-          host and provide Internet services to their customers.
+          the \href{https://reachtele.net/}{local ISP} uses the services of this
+          datacenter to host and provide Internet services to their customers.
      \end{enumerate}
      \item By looking up the AS numbers, most of the sites chosen as
      destinations are hosted in the USA (even those with non-American domains).
