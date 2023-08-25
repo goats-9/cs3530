@@ -117,7 +117,7 @@ class NetGraph:
         # edge will take color from both nodes
         net.inherit_edge_colors('both')
         # produces index.html
-        net.write_html('graph.html',notebook=False)
+        net.write_html('static/graph.html',notebook=False)
 
         # Storing legends data in csv
         legend_data = [list(self.color.keys())[1:],list(self.color.values())[1:]]
