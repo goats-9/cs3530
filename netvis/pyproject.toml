@@ -30,6 +30,7 @@ dependencies = [
   "pandas",
   "openpyxl",
   "pyvis",
+  "flask",
 ]
 
 [project.urls]
