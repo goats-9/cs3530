@@ -1,3 +1,4 @@
+# Python script to find ip addresses of the destination urls
 import socket
 
 fh = open('data/urls.txt', 'r')

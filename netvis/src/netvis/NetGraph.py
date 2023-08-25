@@ -9,6 +9,15 @@ from pyvis.network import Network
 
 from netvis import asn_df
 
+# Routine to find IP address
+def get_ip():
+    # Obtain IP address of source
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ipaddr = s.getsockname()[0]
+    s.close()
+    return ipaddr
+
 '''
 class NetGraph
 
@@ -19,10 +28,11 @@ are stored in an edge list.
 '''
 class NetGraph:
     # Initialize NetGraph object
-    def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip'])):
+    def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip']), source=pd.DataFrame(columns=['Src_ip'])):
         self.nodes = nodes
         self.edge_list = edge_list
-        self.destination = ['10.5.80.104','192.168.1.38','192.168.43.105','192.168.198.209','192.168.0.103']
+        # Obtain IP address of source
+        self.source = pd.DataFrame({'Src_ip':[get_ip()]})
     
     # Add to NetGraph by performing traceroute using mtr
     def traceroute(self, dest, logfile):
@@ -38,12 +48,9 @@ class NetGraph:
         union_df = union_df.loc[union_df['Ip'] != '???']
         union_df['Asn'] = union_df['Asn'].apply(lambda x: 0 if x.partition(' ')[0][2:] == '???' else int(x.partition(' ')[0][2:]))
         # Join with ASN dataframe and retain requried columns
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        ipaddr = s.getsockname()[0]
-        s.close()
         union_df = union_df.merge(asn_df, on='Asn', how='left')[['Ip','Asn','As_name']]
         # Add row for host IP
+        ipaddr = get_ip()
         new_row = pd.DataFrame({'Ip' : ipaddr, 'Asn' : 0, 'As_name' : None}, index=[0])
         union_df = pd.concat([new_row, union_df]).reset_index(drop=True)
         # Pair up adjacent rows using concat and drop last row
@@ -59,12 +66,15 @@ class NetGraph:
         self.nodes = pd.concat([self.nodes, ng.nodes], axis=0, ignore_index=True).drop_duplicates(keep='first')
         # Augment edge list
         self.edge_list = pd.concat([self.edge_list, ng.edge_list], axis=0, ignore_index=True).drop_duplicates(keep='first')
+        # Add sources
+        self.source = pd.concat([self.source, ng.source], axis=0, ignore_index=True).drop_duplicates(keep='first')
     
     # Save NetGraph to Excel files for processing
     def save(self, filename):
         with pd.ExcelWriter(filename) as writer:
             self.nodes.to_excel(writer, sheet_name='nodes', index=False)
             self.edge_list.to_excel(writer, sheet_name='edges', index=False)
+            self.source.to_excel(writer, sheet_name='sources', index=False)
 
     def generate_color(self):
         c = '#%06x' % random.randint(0, 0xFFFFFF)
@@ -122,4 +132,5 @@ class NetGraph:
 def load(filename):
     node_df = pd.read_excel(filename, sheet_name='nodes')
     edge_df = pd.read_excel(filename, sheet_name='edges')
-    return NetGraph(nodes=node_df, edge_list=edge_df)
+    source_df = pd.read_excel(filename, sheet_name='sources')
+    return NetGraph(nodes=node_df, edge_list=edge_df, source=source_df)
