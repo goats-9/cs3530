@@ -1,25 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static',filename= 'styles/style.css')}}">
-    <title>Computer Network</title>
-</head>
-<body>
-    <div class="main">
-        <iframe class="graph" src="{{ url_for('static',filename= 'graph.html')}}" scrolling="no">
-        </iframe>
-        <div class="legend">
-            <h1>Legend</h1>
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Color</th>
-                    </tr>
-                </tbody>
-            </table>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{url_for('static',filename= 'styles/style.css')}}">
+        <title>Computer Network</title>
+    </head>
+
+    <body>
+        <div class="main">
+            <iframe class="graph" src="{{ url_for('static',filename= 'graph.html')}}" scrolling="no">
+            </iframe>
+            <div class="legend">
+                <h1>Legend</h1>
+                <div class="wrapper">
+                    <div class="box a"><strong>Colour</strong></div>
+                    <div class="box b"><strong>Description</strong></div>
+
+                    <!-- Table Row -->
+                    {%for col in ittr %}
+                        {% if loop.index == 1 %}
+                            {% set shape = 'square' %}
+                        {% elif loop.index == 2 %}
+                            {%set shape = 'circle'%}
+                        {% else %}
+                            {% set shape = 'triangle' %}
+                        {% endif %}
+                        <div class="box d"><div class={{shape}} style="--color: {{col[0]}};"></div></div>
+                        <div class="box e">{{col[1]}}</div>
+                    {% endfor %}
+
+                    <!-- Table Row -->
+
+                </div>
+
+            </div>
         </div>
-    </div>
-</body>
+    </body>
+
 </html>
