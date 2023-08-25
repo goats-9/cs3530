@@ -179,12 +179,27 @@ The sailent features of \texttt{netvis} are the following.
      \item Rendering of the graph depicting the topology in HTML, along with the
      use of \texttt{flask} to add a legend and host the entire page on a server.
      The graph is present in \texttt{graph.html}, but the integrated legend is
-     displayed on entering the following commands
+     displayed on running the \texttt{flask} webserver and going to the
+     specified URL in a browser.
+\end{enumerate}
+
+\subsection{Simulation}
+
+\begin{enumerate}
+     \item The data from each source was collected by running the script
+     \begin{lstlisting}
+$ python3 tests/data_collector.py
+     \end{lstlisting}
+     \item The data from various sources was combined and the graph created by
+     running the script
+     \begin{lstlisting}
+$ python3 tests/visualize.py
+     \end{lstlisting}
+     \item The graph was displayed on running the server as follows.
      \begin{lstlisting}
 $ cd server
 $ flask run
      \end{lstlisting}
-     and going to \texttt{http://127.0.0.1:5000} in a browser.
 \end{enumerate}
 
 \section{Challenges}
@@ -212,11 +227,11 @@ topology. The following challenges were faced in the process.
 The following conclusions can be made based on the data collected.
 
 \begin{enumerate}
-     \item The graph obtained is a directed acyclic graph. This means that there
-     are no cycles in the network observed. This is important, otherwise a
-     packet would travel in a cycle without reaching its intended destination
-     and in turn get dropped. Presence of a such cycle may mean that the routing
-     and forwarding algorithms in that part of the network are bugged. 
+     \item The graph obtained is a directed acyclic graph, and there are no
+     cycles in the network observed. Oherwise, a packet would travel in a cycle
+     without reaching its intended destination and in turn get dropped. Presence
+     of such a cycle may mean that the routing and forwarding algorithms in that
+     part of the network are bugged.
      \item From the raw data, sites hosted in countries east of India have
      lesser RTTs (less than 200 ms) compared to sites hosted in countries to the
      west of India (at least 200 ms), when performing traceroutes from sources
@@ -237,8 +252,6 @@ The following conclusions can be made based on the data collected.
           the \href{https://reachtele.net/}{local ISP} uses the services of this
           datacenter to host and provide Internet services to their customers.
      \end{enumerate}
-     \item By looking up the AS numbers, most of the sites chosen as
-     destinations are hosted in the USA (even those with non-American domains).
      \item Some of the largest ISPs observed in terms of number of hops are 
      \begin{enumerate}
           \item \texttt{AS8075}. This corresponds to the datacenter of
