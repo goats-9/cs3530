@@ -18,10 +18,12 @@ is stored in a DataFrame object and the connections
 are stored in an edge list.
 '''
 class NetGraph:
+    # Initialize NetGraph object
     def __init__(self, nodes=pd.DataFrame(columns=['Ip', 'Asn', 'As_name']), edge_list=pd.DataFrame(columns=['Ip', 'next_Ip'])):
         self.nodes = nodes
         self.edge_list = edge_list
     
+    # Add to NetGraph by performing traceroute using mtr
     def traceroute(self, dest, logfile):
         # Get output of mtr command
         csv_str = subprocess.run(['mtr', '-4', '-zCnc8', dest], stdout=subprocess.PIPE).stdout.decode('utf-8')
@@ -47,12 +49,14 @@ class NetGraph:
         # Unite the two objects
         self.union(merge_ng)
  
+    # Add nodes and edges of another NetGraph
     def union(self, ng):
         # Merge nodes
         self.nodes = pd.concat([self.nodes, ng.nodes], axis=0, ignore_index=True).drop_duplicates(keep='first')
         # Augment edge list
         self.edge_list = pd.concat([self.edge_list, ng.edge_list], axis=0, ignore_index=True).drop_duplicates(keep='first')
     
+    # Save NetGraph to Excel files for processing
     def save(self, filename):
         with pd.ExcelWriter(filename) as writer:
             self.nodes.to_excel(writer, sheet_name='nodes', index=False)
@@ -64,6 +68,7 @@ class NetGraph:
             c = '#%06x' % random.randint(0, 0xFFFFFF)
         return c
 
+    # Display the NetGraph as a graph in HTML format
     def disp(self):
         net = Network(directed=True,height="98vh",bgcolor="#FAF0E6")
         num_rows = self.nodes.shape[0]
@@ -106,6 +111,7 @@ class NetGraph:
         df = pd.DataFrame(self.color)
         df.to_csv('legends.csv',index=False,header=True)
 
+# Utility to load NetGraph object from Excel file
 def load(filename):
     node_df = pd.read_excel(filename, sheet_name='nodes')
     edge_df = pd.read_excel(filename, sheet_name='edges')
