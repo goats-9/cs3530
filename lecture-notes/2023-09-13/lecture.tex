@@ -1,0 +1,107 @@
+% To familiarize yourself with this template, the body contains
+% some examples of its use.  Look them over.  Then you can
+% run LaTeX on this file.  After you have LaTeXed this file then
+% you can look over the result either by printing it out with
+% dvips or using xdvi.
+%
+
+\documentclass[twoside]{article}
+%\usepackage{soul}
+\usepackage{./lecnotes_macros}
+
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{CS3530}{Computer Networks}{8}{13 September 2023}{Praveen Tamanna}{Gautam Singh}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+%All figures are to be placed in a separate folder named ``images''
+
+% **** YOUR NOTES GO HERE:
+
+\section{UDP (Cont'd)}
+
+\subsection{UDP Segment Header}
+
+The header contains four fields, each 16-bit wide.
+
+\begin{enumerate}
+    \item Source port
+    \item Destination port
+    \item Length of data
+    \item Checksum
+\end{enumerate}
+
+Data bytes follow after these fields.
+
+\subsection{UDP Checksum}
+
+The goal of UDP checksum is to \emph{detect} errors in transmitted segment, and help in reliable transmission of packets.
+
+At the sender:
+
+\begin{enumerate}
+    \item Treat contents of UDP segment as sequence of 16-bit integers.
+    \item The checksum contains the addition (one's complement sum) of segment content.
+    \item Checksum value put into UDP checksum field.
+\end{enumerate}
+
+At the receiver:
+
+\begin{enumerate}
+    \item Recompute checksum.
+    \item If not equal to checksum field, then manipulation detected.
+    \item If equal, does not \emph{guarantee} manipulation.
+\end{enumerate}
+
+\textbf{Note}: Add carry bit back to 16-bit checksum and take complement.
+
+However, this checksum is \emph{weak}. For instance, more than one bit flip can result in the same checksum. But this is a fast way of computing a checksum, and easy to implement. Therefore, we need to tradeoff speed and security.
+
+\section{Principles of Reliable Data Transfer (RDT)}
+
+Reliable data transfer is implemented as sender and receiver sides of transport layer protocol sending data over an unreliable channel in the network layer. Complexity of reliable data transfer protocol will depend on characteristics of unreliable channel.
+
+\subsection{RDT Protocol Interfaces}
+
+There are four interfaces in this protocol, which is bidirectional. Finite State Machines (FSMs) will be used to specify sender and receiver.
+
+\begin{enumerate}
+    \item \texttt{rdt\_send()}
+    \item \texttt{udt\_send()}
+    \item \texttt{rdt\_rcv()}
+    \item \texttt{deliver\_data()}
+\end{enumerate}
+
+\subsection{RDT 1.0: Reliable Transfer Over Reliable Channel}
+
+Here, we consider a perfectly reliable channel with no bit errors or loss of packets. We have separate FSMs for sender and receiver, where sender sends data from underlying channel and receiver reads from it.
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+    \node[state,initial] (q_0) {Wait for \linebreak call from \linebreak above};
+
+    \path[->] (q_0) edge [loop above] node {0} ();
+\end{tikzpicture}
+\caption{RDT 1.0 FSM.}
+\label{fig:rdt-1.0-fsm}
+\end{figure}
+
+\subsection{RDT 2.0: Channel With Bit Errors}
+
+Here, the underlying channel may flip bits in packet. Error recovery can be done in the following ways:
+
+\begin{enumerate}
+    \item \textbf{Acknowledgements (ACKs)}: receiver explicitly tells sender that packet was received OK.
+    \item \textbf{Negative Acknowledgements (NAKs)}: receiver explicitly tells sender that packet had errors, and \emph{retransmits} packet on recipt of NAK.
+\end{enumerate}
+
+This is known as \emph{stop and wait}. Note that the state of receiver isn't known to sender unless communicated back to sender.
+
+\emph{RDT 2.0 has a fatal flaw}. Suppose that the ACK/NAK gets corrupted, then the sender cannot verify whether a NAK or ACK was received. Moreover, the packet cannot be retransmitted, since it may be a possible duplicate. Handling duplicates is done using a \emph{sequence number} added to each packet.
+
+\subsubsection{RDT 2.1: Handling Garbled ACK/NAK}
+
+\end{document}
