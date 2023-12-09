@@ -1,0 +1,3 @@
+[submodule "arpwatch-cpp"]
+	path = arpwatch-cpp
+	url = git@github.com:goats-9/arpwatch-cpp
